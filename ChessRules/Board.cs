@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace ChessRules
@@ -5,17 +6,17 @@ namespace ChessRules
     public class Board
     {
         // ReSharper disable once InconsistentNaming
-        public string fen { get; private set; }
-        Figure[,] figures;
+        public string fen { get; protected set; }
+        protected Figure[,] figures;
         // ReSharper disable once InconsistentNaming
-        public Color moveColor { get; private set; }
-        public bool canCastleA1 { get; private set; } // Q
-        public bool canCastleH1 { get; private set; } // K
-        public bool canCastleA8 { get; private set; } // q
-        public bool canCastleH8 { get; private set; } // k
-        public Square enpassant { get; private set; }
-        public int drawNumber { get; private set; }
-        public int moveNumber { get; private set; }
+        public Color moveColor { get; protected set; }
+        public bool canCastleA1 { get; protected set; } // Q
+        public bool canCastleH1 { get; protected set; } // K
+        public bool canCastleA8 { get; protected set; } // q
+        public bool canCastleH8 { get; protected set; } // k
+        public Square enpassant { get; protected set; }
+        public int drawNumber { get; protected set; }
+        public int moveNumber { get; protected set; }
 
         public Board(string fen)
         {
@@ -26,68 +27,15 @@ namespace ChessRules
 
         public Board Move(FigureMoving fm)
         {
-            Board next = new Board(fen);
-            next.SetFiguresAt(fm.from, Figure.none);
-            next.SetFiguresAt(fm.to, fm.figure);
-            if (moveColor == Color.black)
-                next.moveNumber++;
-            next.moveColor = moveColor.FlipColor();
-            next.GenerateFEN();
-            return next;
+            return new NextBoard(fen, fm);
+          
         }
-
-        void GenerateFEN()
+        
+        public IEnumerable<FigureOnSquare> YieldMyFigureSquares()
         {
-            this.fen = FenFigures() + " " +
-                       FenMoveColor() + " " +
-                       FenCastleFlags() + " " +
-                       FenEnpassant() + " " +
-                       FenDrawNumber() + " " +
-                       FenMoveNumber();
-        }
-        private string FenFigures()
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int y = 7; y >= 0; y--)
-            {
-                for (int x = 0; x < 8; x++)
-                    sb.Append(figures[x, y] == Figure.none
-                        ? '1'
-                        : (char)figures[x, y]);
-                if (y > 0)
-                    sb.Append("/");
-            }
-            string eight = "11111111";
-            for (int j = 8; j >= 2; j--)
-                sb = sb.Replace(eight.Substring(0, j), j.ToString());
-            return sb.ToString();
-            
-            return "";
-        }
-        private object FenMoveColor()
-        {
-            return moveColor == Color.white ? "w" : "b";
-        }
-        private object FenCastleFlags()
-        {
-            string flags =
-                (canCastleA1 ? "Q" : "") +
-                (canCastleH1 ? "K" : "") +
-                (canCastleA8 ? "q" : "") +
-                (canCastleH8 ? "K" : "");
-            return flags == "" ? "-" : flags;
-        }
-        private object FenEnpassant()
-        {
-            return enpassant.Name;
-        }
-        private object FenDrawNumber()
-        {
-            return drawNumber.ToString();
-        }
-        private object FenMoveNumber()
-        {
-            return moveNumber.ToString();
+            foreach (Square square in Square.YieldBoardSquares())
+                if (GetFigureAt(square).GetColor() == moveColor)
+                    yield return new FigureOnSquare(GetFigureAt(square), square);
         }
 
         public Figure GetFigureAt(Square square)
@@ -96,11 +44,40 @@ namespace ChessRules
                 return figures[square.x, square.y];
             return Figure.none;
         }
-        void SetFiguresAt(Square square, Figure figure)
+        
+        public bool IsCheckAfter(FigureMoving fm)
         {
-            if (square.OnBoard())
-                figures[square.x, square.y] = figure;
+            Board after = Move(fm);
+            return after.CanEatKing();
         }
+
+        public bool IsCheck()
+        {
+            return IsCheckAfter(FigureMoving.none);
+        }
+
+        bool CanEatKing()
+        {
+            Square badKing = FindBadKing();
+            Moves moves = new Moves(this);
+            foreach (FigureOnSquare fs in YieldMyFigureSquares())
+                if (moves.CanMove(new FigureMoving(fs, badKing)))
+                    return true;
+            return false;
+        }
+
+        Square FindBadKing()
+        {
+            Figure badKing = moveColor == Color.white
+                ? Figure.blackKing
+                : Figure.whiteKing;
+            foreach (Square square in Square.YieldBoardSquares())
+                if (GetFigureAt(square) == badKing)
+                    return square;
+            return Square.none;
+
+        }
+     
         void Init()
         {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -151,5 +128,6 @@ namespace ChessRules
         {
             moveNumber = int.Parse(v);
         }
+       
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace ChessRules
+﻿using System.Collections.Generic;
+using System.Runtime.Versioning;
+
+namespace ChessRules
 {
     public class Chess
     {
@@ -9,6 +12,10 @@
                 return board.fen;
             }
         }
+        
+        public bool IsCheck { get; private set; }
+        public bool IsCheckmate { get; private set; }
+        public bool IsStalemate { get; private set; }
 
         Board board;
         Moves moves;
@@ -23,6 +30,20 @@
         {
             this.board = board;
             moves = new Moves(board);
+            SetCheckFlags();
+        }
+
+        void SetCheckFlags()
+        {
+            IsCheck = board.IsCheck();
+            IsCheckmate = false;
+            IsStalemate = false;
+            foreach (string moves in YieldValidMoves())
+                return;
+            if (IsCheck)
+                IsCheckmate = true;
+            else
+                IsStalemate = true;
         }
 
         public Chess Move(string move)
@@ -31,6 +52,8 @@
             if (!moves.CanMove(fm))
                 return this;
 
+            if (board.IsCheckAfter(fm))
+                return this;
             Board nextBoard = board.Move(fm);
             Chess nextChess = new Chess(nextBoard);
             return nextChess;
@@ -40,8 +63,27 @@
         {
             Square square = new Square(x, y);
             Figure figure = board.GetFigureAt(square);
-
             return figure == Figure.none ? '.' : (char) figure;
+        }
+        
+        public char GetFigureAt(string xy)
+        {
+            Square square = new Square(xy);
+            Figure figure = board.GetFigureAt(square);
+            return figure == Figure.none ? '.' : (char) figure;
+        }
+
+        public IEnumerable<string> YieldValidMoves()
+        {
+            foreach (FigureOnSquare fs in board.YieldMyFigureSquares())
+                foreach (Square to in Square.YieldBoardSquares())
+                    foreach (Figure promotion in fs.figure.YieldPromotions(to))
+                    {
+                        FigureMoving fm = new FigureMoving(fs, to, promotion);
+                        if (moves.CanMove(fm))
+                            if (!board.IsCheckAfter (fm))
+                                yield return fm.ToString();
+                    }
         }
     }
 }
