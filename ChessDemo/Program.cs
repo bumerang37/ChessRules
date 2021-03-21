@@ -9,16 +9,29 @@ namespace ChessDemo
         public static void Main(string[] args)
         {
             Chess chess = new Chess();
-            chess.GetFigureAt(3, 5);
 
+            // Console.WriteLine(NextMoves(5, chess));
+            // Console.ReadKey();
+            // return;
             while (true)
             {
                 Console.WriteLine(chess.fen);
                 Print(ChessToAscii(chess));
+                foreach (string moves in chess.YieldValidMoves())
+                    Console.WriteLine(moves);
                 string move = Console.ReadLine();
                 if (move == "") break;
                 chess = chess.Move(move);
             }
+        }
+
+        static int NextMoves(int step, Chess chess)
+        {
+            if (step == 0) return 1;
+            int count = 0;
+            foreach (string moves in chess.YieldValidMoves())
+                count += NextMoves(step - 1, chess.Move(moves));
+            return count;
         }
 
         static string ChessToAscii (Chess chess)
@@ -36,9 +49,9 @@ namespace ChessDemo
             sb.AppendLine("  +----------------+");
             sb.AppendLine("   a b c d e f g h  ");
 
-            // if (chess.isCheck) sb.AppendLine("IS CHECK");
-            // if (chess.isCheckmate) sb.AppendLine("IS CHECKMATE");
-            // if (chess.isStalemate) sb.AppendLine("IS STALEMATE");
+            if (chess.IsCheck) sb.AppendLine("IS CHECK");
+            if (chess.IsCheckmate) sb.AppendLine("IS CHECKMATE");
+            if (chess.IsStalemate) sb.AppendLine("IS STALEMATE");
             return sb.ToString();
         }
         
@@ -57,9 +70,9 @@ namespace ChessDemo
             sb.AppendLine("  +-----------------+");
             sb.AppendLine("    A B C D E F G H  ");
 
-            // if (chess.isCheck) sb.AppendLine("IS CHECK");
-            // if (chess.isCheckmate) sb.AppendLine("IS CHECKMATE");
-            // if (chess.isStalemate) sb.AppendLine("IS STALEMATE");
+            if (chess.IsCheck) sb.AppendLine("IS CHECK");
+            if (chess.IsCheckmate) sb.AppendLine("IS CHECKMATE");
+            if (chess.IsStalemate) sb.AppendLine("IS STALEMATE");
             return sb.ToString();
         }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ChessRules
@@ -48,10 +49,29 @@ namespace ChessRules
             }
 
 
-            return ((char)figure).ToString().ToLower() == ((char)figure).ToString()
-                ? Color.black
-                : Color.white;
+            // return ((char)figure).ToString().ToLower() == ((char)figure).ToString()
+            //     ? Color.black
+            //     : Color.white;
 
+        }
+
+        public static IEnumerable<Figure> YieldPromotions(this Figure figure, Square to)
+        {
+            if (figure == Figure.whitePawn && to.y == 7)
+            {
+                yield return Figure.whiteQueen;
+                yield return Figure.whiteRook;
+                yield return Figure.whiteBishop;
+                yield return Figure.whiteKnight;
+            } else if (figure == Figure.blackPawn && to.y == 0)
+            {
+                yield return Figure.blackQueen;
+                yield return Figure.blackRook;
+                yield return Figure.blackBishop;
+                yield return Figure.blackKnight;
+            }
+            else
+                yield return Figure.none;
         }
     }
 }

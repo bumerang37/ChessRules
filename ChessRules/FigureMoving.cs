@@ -1,3 +1,5 @@
+using System;
+
 namespace ChessRules
 {
     public class FigureMoving
@@ -6,6 +8,15 @@ namespace ChessRules
         public Square from { get; private set; }
         public Square to { get; private set; }
         public Figure promotion { get; private set; }
+
+        public static FigureMoving none = new FigureMoving();
+        FigureMoving()
+        {
+            figure = Figure.none;
+            from = Square.none;
+            to = Square.none;
+            promotion = Figure.none;
+        }
 
         public FigureMoving(FigureOnSquare fs, Square to, Figure promotion = Figure.none)
         {
@@ -24,6 +35,31 @@ namespace ChessRules
                 this.promotion = (Figure)move[5];
             else
                 this.promotion = Figure.none;
+        }
+
+        public override string ToString()
+        {
+            return ((char)figure).ToString() +
+                   from.Name +
+                   to.Name +
+                   (promotion == Figure.none ? "" : ((char)promotion).ToString());
+        }
+        
+        public int DeltaX { get { return to.x - from.x;  } }
+        public int DeltaY { get { return to.y - from.y;  } }
+        
+        public int AbsDeltaX { get { return Math.Abs(DeltaX); } }
+        public int AbsDeltaY { get { return Math.Abs(DeltaY);  } }
+        
+        public int SignX { get { return Math.Sign(DeltaX); } }
+        public int SignY { get { return Math.Sign(DeltaY); } }
+        
+        public Figure PlacedFigure 
+        {
+            get
+            {
+               return promotion == Figure.none ? figure : promotion;
+            } 
         }
     }
 }
