@@ -46,8 +46,21 @@ namespace ChessRules
                 IsStalemate = true;
         }
 
+        public bool isValidMove(string move)
+        {
+            FigureMoving fm = new FigureMoving(move);
+            if (!moves.CanMove(fm))
+                return false;
+            if (board.IsCheckAfter(fm))
+                return false;
+            return true;
+        }
+
         public Chess Move(string move)
         {
+            if (!isValidMove(move))
+                return this;
+            
             FigureMoving fm = new FigureMoving(move);
             if (!moves.CanMove(fm))
                 return this;
