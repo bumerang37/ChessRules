@@ -1,9 +1,0 @@
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\bin\Debug\ChessDemo.exe
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\bin\Debug\ChessDemo.pdb
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\obj\Debug\ChessDemo.csprojAssemblyReference.cache
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\obj\Debug\ChessDemo.csproj.CoreCompileInputs.cache
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\obj\Debug\ChessDemo.exe
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\obj\Debug\ChessDemo.pdb
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\bin\Debug\ChessRules.dll
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\bin\Debug\ChessRules.pdb
-C:\Users\Dmitriy\RiderProjects\ChessRules\ChessDemo\obj\Debug\ChessDemo.csproj.CopyComplete
