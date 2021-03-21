@@ -10,9 +10,9 @@ namespace ChessDemo
         {
             Chess chess = new Chess();
 
-            Console.WriteLine(NextMoves(5, chess));
-            Console.ReadKey();
-            return;
+            // Console.WriteLine(NextMoves(5, chess));
+            // Console.ReadKey();
+            // return;
             while (true)
             {
                 Console.WriteLine(chess.fen);
