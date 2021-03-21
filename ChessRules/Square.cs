@@ -1,0 +1,50 @@
+namespace ChessRules
+{
+    public struct Square
+    {
+        // ReSharper disable once InconsistentNaming
+        public static Square none = new Square(-1, -1);
+        // ReSharper disable once InconsistentNaming
+        public int x { get; private set; }
+        // ReSharper disable once InconsistentNaming
+        public int y { get; private set; }
+        
+        public Square(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public Square(string name) // e2, h8, g5 ...
+        {
+            if (name.Length == 2 &&
+                name[0] >= 'a' && name[0] <= 'h' &&
+                name[1] >= '1' && name[1] <= '8')
+            {
+                x = name[0] - 'a'; // 'a' - 'a' = 0, 'b' - 'a' = 1
+                y = name[1] - '1';
+            }
+            else
+                this = none;
+        }
+
+        public string Name
+        {
+            get
+            {
+                if (OnBoard())
+                    return ((char)('a' + x)).ToString() +
+                           (y + 1).ToString();
+                else
+                    return "-";
+            }
+        }
+
+        public bool OnBoard()
+        {
+            return (x >= 0 && x < 8) &&
+                   (y >= 0 && y < 8);
+
+        }
+    }
+}
